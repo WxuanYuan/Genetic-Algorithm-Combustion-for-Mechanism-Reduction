@@ -1,0 +1,6 @@
+54 # RRC
+4   # Spcies Num of Fuel
+13   # Exp group Num
+3  # Max point Num in group
+TUM_syngas_0.2.cti # Mech Name
+OH  # IDT peak specie

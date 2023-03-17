@@ -1,0 +1,71 @@
+54 #Dimension
+0.01 #Mutation rate
+10 #Population size
+10 #Maximum iteration
+6 #initial iteration
+0.001 #precision
+5 #Maximum process
+5_RRC_final_test.csv #checkpoint path
+TUM_CH2O_CH3OH_0.2.yaml #mechanism yaml path
+CH4_IDT_configuration.dat #IDT configuration path
+CH4_experimental_IDT.csv #experimental IDT path
+CH4_PFR_configuration.dat #PFR configuration path
+CH4_experimental_PFR.csv #experimental PFR path
+mech_CH2O_CH3OH.dat #optimization pointers
+RRC.dat #optimization interval
+RRC_final_test.csv #output checkpoint file name
+0 0.65764 #lower and upper bound of RRC
+0.02781 0.90681 #lower and upper bound of RRC
+0.49391 0.82459 #lower and upper bound of RRC
+0 0.38533 #lower and upper bound of RRC
+0.44663 0.71255 #lower and upper bound of RRC
+0.02752 0.76516 #lower and upper bound of RRC
+0 0.96022 #lower and upper bound of RRC
+0.32883 0.94103 #lower and upper bound of RRC
+0.49096 1.05208 #lower and upper bound of RRC
+0.20013 0.70037 #lower and upper bound of RRC
+0.37814 0.86238 #lower and upper bound of RRC
+0.0779 0.66618 #lower and upper bound of RRC
+0.20293 0.90813 #lower and upper bound of RRC
+0.09682 0.79926 #lower and upper bound of RRC
+0.00778 0.95774 #lower and upper bound of RRC
+0.05014 0.97554 #lower and upper bound of RRC
+0.499999 0.5 #lower and upper bound of RRC
+0.499999 0.5 #lower and upper bound of RRC
+0.499999 0.5 #lower and upper bound of RRC
+0.21257 0.44237 #lower and upper bound of RRC
+0.06602 0.58106 #lower and upper bound of RRC
+0.05177 0.62085 #lower and upper bound of RRC
+0.16631 0.54651 #lower and upper bound of RRC
+0.4999999 0.5 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+0 1 #lower and upper bound of RRC
+
