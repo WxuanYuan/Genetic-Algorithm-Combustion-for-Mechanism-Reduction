@@ -1,7 +1,7 @@
 from GAPar import GeneticAlgorithmForOptimization, GeneticAlgorithmForReduction
 import multiprocessing
 import os
-
+import cantera as ct
 
 def start_program():
     print("---  Chemical Kinetic Mechanism Optimization Using Genetic Algorithm  ---")
@@ -36,6 +36,10 @@ def reduction_module_command_line(ga):
     print("[restart]: restart program")
     while True:
         command = input("> ")
+        if command == "mute":
+            ct.suppress_thermo_warnings()
+            print("Thermo warnings from Cantera have been suppressed.\n")
+            continue
         if command == "run":
             try:
                 ga.run()

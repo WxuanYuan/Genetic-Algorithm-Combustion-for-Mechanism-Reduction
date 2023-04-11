@@ -1,7 +1,7 @@
 from GAPar import GeneticAlgorithmForReduction
 import multiprocessing
 import os
-
+import cantera as ct
 
 def start_program():
     print("---  Chemical Kinetic Mechanism Reduction Using Genetic Algorithm  ---")
@@ -32,6 +32,7 @@ def reduction_module_command_line(ga):
     print("[output]: output reduced mechanism by generating an yaml file")
     print("[visualize]: show accuracy and size curve the given checkpoints by showing ")
     print("[animation]: create a GIF")
+    print("[mute]: suppress thermo warnings")
     print("[quit]: shut down program")
     print("[restart]: restart program")
     while True:
@@ -43,6 +44,10 @@ def reduction_module_command_line(ga):
             except FileNotFoundError:
                 print("Running interrupted by an error.\n")
                 continue
+        if command == "mute":
+            ct.suppress_thermo_warnings()
+            print("Thermo warnings from Cantera have been suppressed.\n")
+            continue
         if command == "visualize":
             try:
                 ga.visualize()
