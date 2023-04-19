@@ -8,7 +8,7 @@ The following input files are required and should be placed in the `\source_file
 
 1. **General Configuration File**: This file sets all global hyperparameters and paths to all other input files. Provide the path to this file when launching the program.
 
-   Example of a General Configuration File:
+   Please create the file based on the in-text comment in the following example (or by modifying it):
 
 ```
 72 # Dimension: number of species in the input detailed mechanism
