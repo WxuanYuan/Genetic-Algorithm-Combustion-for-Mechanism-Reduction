@@ -87,4 +87,5 @@ The effectiveness of genetic algorithms in optimizing and reducing mechanisms re
 ### Usage
 
 Please make sure the Python has been installed properly on your device.
-Clic
+Click 'install.bat' before first lunching to install all dependencies needed.
+Click ''
