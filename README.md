@@ -64,7 +64,7 @@ That's it! The program will now begin reducing the number of species in the comb
 
 ## Code Architecture
 
-The code is organized into five `.py` files:
+The method is implemented by five `.py` files:
 
 1. `Data.gas.py`
 2. `Data.Labels.py`
@@ -72,19 +72,19 @@ The code is organized into five `.py` files:
 4. `Tools.tools.py`
 5. `GAPar.py`
 
-`GAPar.py` defines the kernel control module of the program, the `BaseGA` class, and two subclasses.
+`GAPar.py` defines the kernel control module of the method, which implements the `BaseGA` class, and two subclasses.
 
-The `GeneticAlgorithmForOptimization` subclass is for RRC optimization (inherited from a previous version). You do not need to read this part, as it is not relevant to the mechanism reduction process. Instead, focus on the `GeneticAlgorithmForReduction` subclass.
+The `GeneticAlgorithmForOptimization` subclass is for RRC optimization (inherited from a previous version), while the `GeneticAlgorithmForReduction` subclass is for specie reduction.
 
-To perform the genetic algorithm on mechanisms, the following components must be defined:
+The effectiveness of genetic algorithms in optimizing and reducing mechanisms relies on the following key components:
 
-- **Cantera object for mechanisms**: Implemented by the `Gas` class in `Data.gas.py`. This implementation style for the interface between Python and Cantera is due to the inability to transport Cantera objects between different processes.
-- **Optimization targets**: Implemented by the `LearnableParameter` class in `Data.learnable_parameters.py`. Genetic algorithm operators are also implemented here.
+- **Cantera object for mechanisms**: Implemented by the `Gas` class in `Data.gas.py`. The implementation style for the interface between Python and Cantera is due to the inability to transport Cantera objects between different processes.
+- **Optimization targets**: Implemented by the `LearnableParameter` class in `Data.learnable_parameters.py`, where Genetic algorithm operators are implemented.
 - **Experimental data**: Implemented by the `Label` class in `Data.Labels.py`.
 
 `Tools.tools.py` contains kernel methods that compute fitness values for each chromosome and other helper functions.
 
-### Input Files for Mechanism Reduction
+### Usage
 
-Each class mentioned above (except for `Tools.tools.py`) reads at least one input file. It's recommended to check the in-text comments for more information on the specific files.
-
+Please make sure the Python has been installed properly on your device.
+Clic
