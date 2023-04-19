@@ -19,9 +19,9 @@ The following input files are required and should be placed in the `\source_file
 30 # Initial iteration: this number is only used to name checkpoints files
 0.001 # Encoding precision: modification is not suggested
 5 # Maximum process: number of processes for multi-processing, must be smaller than the number of CPU cores
-TUM_CH2O_CH3OH_0.2.yaml # Mechanism yaml path
-CH4_IDT_configuration.dat # IDT configuration path
-CH4_experimental_IDT.csv # Experimental IDT path
+TUM_CH2O_CH3OH_0.2.yaml # Cantera Mechanism File path
+CH4_IDT_configuration.dat # IDT configuration File path
+CH4_experimental_IDT.csv # Experimental IDT Data CSV File path
 59_CH4_Reduction_optimized_final.csv # Checkpoint path: the program will load this file and use it as the first population. If no checkpoint file is available, please set to an empty path.
 CH4_sensitivities.csv # Sensitivities file name: if this path is empty, sensitivities for reactions will be computed and saved to this path. Otherwise, the program will load and use sensitivity values in the file for preprocessing directly.
 CH4_Reduction_optimized_final.csv # Output checkpoint file name
@@ -38,7 +38,7 @@ ck2yaml --input=MECH_FILE_NAME.inp --permissive --thermo=THERMO_FILE_NAME.dat
 
 3. **Experimental IDT Data CSV File**
 
-4. **Configuration File for Reading Experimental IDT Data**
+4. **IDT Configuration File for Reading Experimental IDT Data**
 
 Example file for reading `source_files\CH4_experimental_IDT.csv`:
 
