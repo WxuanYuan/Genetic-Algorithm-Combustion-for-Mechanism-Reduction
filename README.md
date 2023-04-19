@@ -87,6 +87,9 @@ The effectiveness of genetic algorithms in optimizing and reducing mechanisms re
 ### Usage
 
 Please make sure the Python has been installed properly on your device.
+
 Click 'install.bat' before first launching to install all dependencies needed.
+
 Click 'launch_optimization.bat' to start optimization.
+
 Click 'launch_retuction.bat' to start reduction.
