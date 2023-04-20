@@ -5,7 +5,7 @@
 6 #initial iteration
 0.001 #precision
 5 #Maximum process
-5_RRC_final_test.csv #checkpoint path
+8_RRC_final_test.csv #checkpoint path
 TUM_CH2O_CH3OH_0.2.yaml #mechanism yaml path
 CH4_IDT_configuration.dat #IDT configuration path
 CH4_experimental_IDT.csv #experimental IDT path

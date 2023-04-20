@@ -235,6 +235,8 @@ class ReactionRateConstants(LearnableParameter):
         """
         shape = np.shape(self.chrom)
         mask = (np.random.rand(*shape) < self.mutation_rate)
+        mask = mask.astype(int)
+        self.chrom = self.chrom.astype(int)
         self.chrom ^= mask
         self.chrom2x()
 
@@ -254,6 +256,9 @@ class ReactionRateConstants(LearnableParameter):
                 n1, n2 = n2, n1
             mask[i, n1:n2] = 1
         # 'invert a bit if mask==1 and parents are different' is equivalent to 'exchange a bit if mask==1'
+        Chrom1 = Chrom1.astype(int)
+        Chrom2 = Chrom2.astype(int)
+        mask = mask.astype(int)
         mask2 = (Chrom1 ^ Chrom2) & mask
         Chrom1 ^= mask2
         Chrom2 ^= mask2

@@ -197,7 +197,7 @@ class GasForReduction(Gas):
     This is an interface to Cantera, which produces the mechanism object for reduction tasks.
     '''
     def __init__(self, learnableParameters: ReductionCode, index: int, non_important_species, previousLearnableParameters
-                 , remained_reactions_encode_through_sensitivity=None, mechanism_yaml_path="TUM_CH2O_CH3OH_0.2.yaml"):
+                 , remained_reactions_encode_through_sensitivity=None, mechanism_yaml_path="TUM_CH2O_CH3OH_0.2.yaml", important_species=None):
         super().__init__(learnableParameters, index, previousLearnableParameters, mechanism_yaml_path)
         '''
         The Cantera fuel object is produced by a description text, namely a long String.
@@ -240,6 +240,11 @@ class GasForReduction(Gas):
             if self.specie_names[i] in non_important_species:
                 self.non_important_species_encode[i] = 1
 
+        self.important_species_encode = np.zeros((self.n_species,)).astype(int)
+        if important_species is not None:
+            for i in range(self.n_species):
+                if self.specie_names[i] in important_species:
+                    self.important_species_encode[i] = 1
 
     def get_skeleton_mechanism_gas(self, with_all_species=True):
         '''

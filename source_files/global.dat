@@ -1,0 +1,16 @@
+28 #Dimension
+162 #Reaction
+0.03 #Mutation rate
+30 #Population size
+30 #Maximum iteration
+0 #initial iteration
+5 #Maximum process
+test_mech.yaml #mechanism yaml path
+CH4_IDT_configuration.dat #IDT configuration path
+CH4_experimental_IDT.csv #experimental IDT path
+-59_CH4_Reduction_optimized_final.csv #checkpoint path
+CH4_Reducted_sensitivities.csv #sensitivities file name
+CH4_Reducted_Reduction.csv #output checkpoint file name
+0.0001 #delta
+N2, AR, HE, O2, O, H, HO2, OH, OH*, H2, H2O2, H2O, C, CO2, CO, CH, HCO, CH3OH, CH3O, CH4, C2H2, C2H3, C2H4, C2H5, C2H6 #unimportant-species
+CH2CH2OH, CH3CHO, CH3CHOH, CH3CH2O, CH2CHOO, CH2CH2O2H, O2C2H4OH, nC3H7, iC3H7, C3H8, C4H4, C4, C4H, C4H2, H2CCCCH, i-C4H5, C4H6, nC4H7, C4H8, iC4H8 #unimportant-species

@@ -6,7 +6,10 @@ import pandas as pd
 class SimData:
 
     def __init__(self, RRCNum, GroNum, PointNumMax):
-        self.RanN = np.zeros(RRCNum)  # 随机数
+        if RRCNum is not None:
+            self.RanN = np.zeros(RRCNum)  # 随机数
+        else:
+            self.RanN = None  # 随机数
         self.tarM = np.zeros((GroNum, PointNumMax))  # 仿真target
         self.Etar = np.zeros((GroNum, PointNumMax))  # 目标仿真误差
         self.Egro = np.zeros((GroNum))  # 每组平均仿真误差
@@ -15,11 +18,13 @@ class SimData:
 class IDT_Label:
     """This class reads and stores the IDT experimental data. """
 
-    def __init__(self, root_path, IDT_configuration_path="CH4_IDT_configuration.dat", experimental_IDT_path="CH4_experimental_IDT.csv"):
+    def __init__(self, RRCNum, root_path, IDT_configuration_path="CH4_IDT_configuration.dat", experimental_IDT_path="CH4_experimental_IDT.csv"):
         """Reads and stores the IDT experimental data.
 
         Parameters
         ----------
+        RRCNum: int
+            Number of RRCs.
         root_path: String
             Root path of the program.
         IDT_configuration_path: String
@@ -30,17 +35,16 @@ class IDT_Label:
         self.description = "IDP Error"
 
         # read parameters
+        self.RRCNum = RRCNum
         try:
             with open(root_path + "\source_files" + f"\{IDT_configuration_path}", 'r') as input_data:
-                self.RRCNum = int((input_data.readline()).split(' ', 1)[0])   # RRC个数
                 self.FuelNum = int((input_data.readline()).split(' ', 1)[0])  # 组分
                 self.GroNum = int((input_data.readline()).split(' ', 1)[0])  # 试验总组数
                 self.PointNumMax = int((input_data.readline()).split(' ', 1)[0])  # 每组最大试验点数
-                self.MechName = str((input_data.readline()).split(' ', 1)[0])  # 机理文件名
                 self.PeakName = str((input_data.readline()).split(' ', 1)[0])  # IDT判断峰值组分名
-            print(f"Experimental IDT loaded from path [source_files\\{IDT_configuration_path}].")
+            print(f"Experimental IDT configuration loaded from path [source_files\\{IDT_configuration_path}].")
         except FileNotFoundError:
-            print(f"No experimental IDT found under path [source_files\\{IDT_configuration_path}].")
+            print(f"No experimental IDT configuration found under path [source_files\\{IDT_configuration_path}].")
             raise FileNotFoundError
 
         # read data
@@ -54,7 +58,13 @@ class IDT_Label:
         self.ExpUn = np.zeros((self.GroNum, self.PointNumMax))
         self.SimIDT = np.zeros((self.GroNum, self.PointNumMax, 5))
         self.IDTmethod = np.empty((self.GroNum, self.PointNumMax), dtype=object)
-        data = pd.read_csv(root_path + "\source_files" + f"\{experimental_IDT_path}")
+
+        try:
+            data = pd.read_csv(root_path + "\source_files" + f"\{experimental_IDT_path}")
+            print(f"Experimental IDT data loaded from path [source_files\\{experimental_IDT_path}].")
+        except FileNotFoundError:
+            print(f"No experimental IDT data found under path [source_files\\{experimental_IDT_path}].")
+            raise FileNotFoundError
         Name = data.columns.values
         for I in range(self.FuelNum):
             self.FuelName[I] = str(Name[I + 4])
@@ -81,11 +91,13 @@ class IDT_Label:
 class PFR_Label:
     """This class Reads and stores the PFR experimental data. """
 
-    def __init__(self, root_path, PFR_configuration_path="CH4_PFR_configuration.dat", experimental_PFR_path="CH4_experimental_PFR.csv"):
+    def __init__(self, RRCNum, root_path, PFR_configuration_path="CH4_PFR_configuration.dat", experimental_PFR_path="CH4_experimental_PFR.csv"):
         """This class Reads and stores the PFR experimental data.
 
         Parameters
         ----------
+        RRCNum: int
+            Number of RRCs.
         root_path: String
             Root path of the program.
         PFR_configuration_path: String
@@ -96,19 +108,18 @@ class PFR_Label:
         self.description = "PFR Error"
 
         # read parameters
+        self.RRCNum = RRCNum
         try:
             with open(root_path + "\source_files" + f"\{PFR_configuration_path}", 'r') as input_data:
-                self.RRCNum = int((input_data.readline()).split(' ', 1)[0])  # RRC个数
                 self.FuelNum = int((input_data.readline()).split(' ', 1)[0])  # 组分
                 self.GroNum = int((input_data.readline()).split(' ', 1)[0])  # 试验总组数
                 self.PointNumMax = int((input_data.readline()).split(' ', 1)[0])  # 每组最大试验点数
-                self.MechName = str((input_data.readline()).split(' ', 1)[0])  # 机理文件名
                 self.timesteps = int((input_data.readline()).split(' ', 1)[0])
                 self.PeakName_1 = str((input_data.readline()).split(' ', 1)[0])  # IDT判断峰值组分名1
                 self.PeakName_2 = str((input_data.readline()).split(' ', 1)[0])  # IDT判断峰值组分名2
-            print(f"Experimental PFR loaded from path [source_files\\{PFR_configuration_path}].")
+            print(f"Experimental PFR configuration loaded from path [source_files\\{PFR_configuration_path}].")
         except FileNotFoundError:
-            print(f"No experimental PFR found under path [source_files\\{PFR_configuration_path}].")
+            print(f"No experimental PFR configuration found under path [source_files\\{PFR_configuration_path}].")
             raise FileNotFoundError
 
         # initialize and read data
@@ -126,7 +137,12 @@ class PFR_Label:
         # self.SpecieName1 = np.zeros((self.GroNum, self.PointNumMax))
         self.t = np.zeros((self.GroNum, self.PointNumMax))
 
-        data = pd.read_csv(root_path + "\source_files" + f"\{experimental_PFR_path}")
+        try:
+            data = pd.read_csv(root_path + "\source_files" + f"\{experimental_PFR_path}")
+            print(f"Experimental PFR data loaded from path [source_files\\{experimental_PFR_path}].")
+        except FileNotFoundError:
+            print(f"No experimental PFR data found under path [source_files\\{experimental_PFR_path}].")
+            raise FileNotFoundError
         Name = data.columns.values
         for I in range(self.FuelNum):
             self.FuelName[I] = str(Name[I + 4])
@@ -134,8 +150,8 @@ class PFR_Label:
         for I in range(data.shape[0]):
             II = int(data['GroNum'][I]) - 1
             JJ = int(data['PointNum'][I]) - 1
-            self.T5[II, JJ] = float(data['T5'][I])
-            self.p5[II, JJ] = float(data['p5'][I])
+            self.T5[II, JJ] = float(data['T'][I])
+            self.p5[II, JJ] = float(data['p'][I])
 
             for J in range(self.FuelNum):
                 self.FuelMF[II, JJ, J] = float(data[str(self.FuelName[J])][I])

@@ -61,12 +61,14 @@ class BaseGA(metaclass=ABCMeta):
         self.idp_Label = None
         self.pfr_Label = None
         self.load_experience_data()
-        if not isinstance(self.idp_Label, IDT_Label):
-            print(f"Unknown experienced data type: {type(self.idp_Label)}")
-            raise RuntimeError
-        if not isinstance(self.pfr_Label, PFR_Label):
-            print(f"Unknown experienced data type: {type(self.pfr_Label)}")
-            raise RuntimeError
+        if self.pfr_Label is not None:
+            if not isinstance(self.idp_Label, IDT_Label):
+                print(f"Unknown experienced data type: {type(self.idp_Label)}")
+                raise RuntimeError
+        if self.pfr_Label is not None:
+            if not isinstance(self.pfr_Label, PFR_Label):
+                print(f"Unknown experienced data type: {type(self.pfr_Label)}")
+                raise RuntimeError
 
         self.previous_learnable_parameters = None
         self.FitV = None
@@ -189,8 +191,12 @@ class GeneticAlgorithmForOptimization(BaseGA):
         load experienced data.
         '''
         # labels and learnable parameters
-        self.idp_Label = IDT_Label(self.root_path, self.IDT_configuration_path, self.experimental_IDT_path)
-        self.pfr_Label = PFR_Label(self.root_path, self.PFR_configuration_path, self.experimental_PFR_path)
+        self.idp_Label = IDT_Label(self.dimension, self.root_path, self.IDT_configuration_path, self.experimental_IDT_path)
+        try:
+            self.pfr_Label = PFR_Label(self.dimension, self.root_path, self.PFR_configuration_path, self.experimental_PFR_path)
+        except FileNotFoundError:
+            self.pfr_Label = None
+            print("PFR error ignored.")
 
     def define_chromosome(self):
         '''
@@ -307,20 +313,43 @@ class GeneticAlgorithmForOptimization(BaseGA):
         s1 = pd.DataFrame(matrix, columns=['X', 'values'])
         s1.to_excel('Best_result_RRC.xlsx', index=False, header=False)
 
-    def generate_yaml_file(self, index):
+    def generate_yaml_file(self, checkpoint_path_for_output, index, prefix):
         """
         Create a Cantera file for the mechanism described by the [index]-th chromosome in the current population.
         """
-        self.learnable_parameters.initialize_population()
-        gas = GasForOptimization(self.learnable_parameters, index, self.previous_learnable_parameters,
-                                 self.mechanism_yaml_path, self.optimization_pointers_file)
-        string = gas.get_gas(return_description=True)
-        current_time = datetime.datetime.now()
-        formatted_time = current_time.strftime("%Y_%m_%d_%H_%M_%S")
-        f = open(f"output\\optimized_mechanism_{formatted_time}.yaml", mode="w")
-        f.write(string)
-        print(f"Optimized mechanism saved to [output\\optimized_mechanism_{formatted_time}.yaml].\n")
-        f.close()
+        try:
+            def read_initial_population(file_name):
+                chrom = pd.read_csv(f"Checkpoints\\{file_name}")
+                return chrom.values[:, 1:]
+
+            output_population = read_initial_population(checkpoint_path_for_output)
+            print(f"Checkpoint file loaded from path [Checkpoints\\{checkpoint_path_for_output}].")
+        except FileNotFoundError:
+            print(f"No checkpoint file loaded from path [Checkpoints\\{checkpoint_path_for_output}].")
+            raise FileNotFoundError
+        assert len(output_population) == self.population, "Please set population equal to number of individuals in the checkpoint file."
+        output_learnable_parameters = ReactionRateConstants(self.root_path, self.population, output_population)
+        output_learnable_parameters.initialize_population()
+
+        if index is None:
+            for i in range(self.population):
+                output_gas = GasForOptimization(output_learnable_parameters, i, self.previous_learnable_parameters,
+                                         self.mechanism_yaml_path, self.optimization_pointers_file)
+                string = output_gas.get_gas(return_description=True)
+                output_file_name = f"output\\{prefix}_individual{i}.yaml"
+                f = open(output_file_name, mode="w")
+                print(f"Opimized mechanism saved to [{output_file_name}].\n")
+                f.write(string)
+                f.close()
+        else:
+            output_gas = GasForOptimization(output_learnable_parameters, index, self.previous_learnable_parameters,
+                                     self.mechanism_yaml_path, self.optimization_pointers_file)
+            string = output_gas.get_gas(return_description=True)
+            output_file_name = f"output\\{prefix}_individual{index}.yaml"
+            f = open(output_file_name, mode="w")
+            print(f"Opimized mechanism saved to [{output_file_name}].\n")
+            f.write(string)
+            f.close()
 
     def visualize(self):
         """
@@ -359,8 +388,10 @@ def compute_error_for_Optimization(ga: GeneticAlgorithmForOptimization, index, q
         gas = GasForOptimization(ga.learnable_parameters, index, ga.previous_learnable_parameters,
                                  ga.mechanism_yaml_path, ga.optimization_pointers_file)
         IDP_error = compute_IDP_error(ga.idp_Label, gas.get_gas())
-        PFR_error = compute_PFR_error(ga.pfr_Label, gas.get_gas())
-        # PFR_error = 0.0
+        if ga.pfr_Label is None:
+            PFR_error = 0.0
+        else:
+            PFR_error = compute_PFR_error(ga.pfr_Label, gas.get_gas())
         error = (IDP_error + PFR_error) / 2
     queue.put((index, error))
 
@@ -395,7 +426,6 @@ class GeneticAlgorithmForReduction(BaseGA):
                 self.population = int((input_data.readline()).split(' ', 1)[0])  # Population size
                 self.max_iteration = int((input_data.readline()).split(' ', 1)[0])  # Maximum iteration
                 self.initial_iteration = int((input_data.readline()).split(' ', 1)[0])  # initial iteration
-                self.precision = float((input_data.readline()).split(' ', 1)[0])  # Maximum precision
                 self.max_process_number = int((input_data.readline()).split(' ', 1)[0])  # Maximum process
                 self.mechanism_yaml_path = (input_data.readline()).split(' ', 1)[0]  # mechanism yaml path
                 self.IDT_configuration_path = (input_data.readline()).split(' ', 1)[0]  # IDT configuration path
@@ -404,7 +434,9 @@ class GeneticAlgorithmForReduction(BaseGA):
                 self.sensitivities_file_name = (input_data.readline()).split(' ', 1)[0]  # sensitivities file name
                 self.output_file_name = (input_data.readline()).split(' ', 1)[0]  # output_file_name
                 self.delta = float((input_data.readline()).split(' ', 1)[0])  # delta
-                self.non_important_species = (input_data.readline()).split(' ')[:10]  # non-important-species
+                self.important_species = (input_data.readline()).split(' ')  # important-species
+                self.important_species = [n.replace(',', '') for n in self.important_species]
+                self.non_important_species = (input_data.readline()).split(' ')[:10]  # unimportant-species
                 self.non_important_species = [n.replace(',', '') for n in self.non_important_species]
             print(f"Successfully loaded Global configuration file.")
         except FileNotFoundError:
@@ -426,12 +458,16 @@ class GeneticAlgorithmForReduction(BaseGA):
 
         # important_species_mask
         # Todo: remove hard-coding!
-        important_species_mask = np.zeros((self.population, self.n_species))
-        important_species = list(np.arange(0, 17))
-        important_species.extend([22, 23, 27, 31, 33, 35, 39, 43])
-        for index in important_species:
-            important_species_mask[:, index] = 1
-        self.learnable_parameters.important_species_mask = important_species_mask
+        try:
+            temp_gas = GasForReduction(self.learnable_parameters, 0, self.non_important_species,
+                                                self.previous_learnable_parameters, None, self.mechanism_yaml_path,
+                                       important_species=self.important_species)
+        except FileNotFoundError:
+            raise FileNotFoundError
+
+        self.important_species_encode = temp_gas.important_species_encode
+        self.learnable_parameters.important_species_mask = self.important_species_encode
+
         self.remained_reactions_encode_through_sensitivity = np.ones(self.n_reactions, )
         self.remained_species_encode_through_sensitivity = np.ones(self.n_species, )
         self.non_important_species_encode = None
@@ -441,8 +477,8 @@ class GeneticAlgorithmForReduction(BaseGA):
         load experienced data.
         '''
         # labels and learnable parameters
-        self.idp_Label = IDT_Label(self.root_path, self.IDT_configuration_path, self.experimental_IDT_path)
-        self.pfr_Label = PFR_Label(self.root_path)
+        self.idp_Label = IDT_Label(None, self.root_path, self.IDT_configuration_path, self.experimental_IDT_path)
+        self.pfr_Label = PFR_Label(None, self.root_path)
 
     def define_chromosome(self):
         '''
@@ -771,20 +807,52 @@ class GeneticAlgorithmForReduction(BaseGA):
         imageio.mimsave('grids/animation.gif', images, duration=0.3)
         print(f"One GIF saved to [grids/animation.gif]")
 
-    def generate_yaml_file(self, index):
+    def generate_yaml_file(self, checkpoint_path_for_output, index, prefix):
         """
         Create a Cantera file for the mechanism described by the [index]-th chromosome in the current population.
         """
-        gas = GasForReduction(self.learnable_parameters, index, self.non_important_species,
-                              self.previous_learnable_parameters, self.remained_reactions_encode_through_sensitivity,
-                              self.mechanism_yaml_path)
-        string = gas.get_skeleton_mechanism_yaml_string()
-        current_time = datetime.datetime.now()
-        formatted_time = current_time.strftime("%Y_%m_%d_%H_%M_%S")
-        f = open(f"output\\reduced_mechanism_{formatted_time}.yaml", mode="w")
-        print(f"Reduced mechanism saved to [output\\reduced_mechanism_{formatted_time}.yaml].\n")
-        f.write(string)
-        f.close()
+        """
+        Create a Cantera file for the mechanism described by the [index]-th chromosome in the current population.
+        """
+        try:
+            def read_initial_population(file_name):
+                chrom = pd.read_csv(f"Checkpoints\\{file_name}")
+                return chrom.values[:, 1:]
+
+            output_population = read_initial_population(checkpoint_path_for_output)
+            print(f"Checkpoint file loaded from path [Checkpoints\\{checkpoint_path_for_output}].")
+        except FileNotFoundError:
+            print(f"No checkpoint file loaded from path [Checkpoints\\{checkpoint_path_for_output}].")
+            raise FileNotFoundError
+
+        assert len(output_population) == self.population, "Please set population equal to number of individuals in the checkpoint file."
+        output_learnable_parameters = ReductionCode(self.root_path, self.n_species, self.mutation_rate, self.population,
+                      initial_population = output_population)
+        output_learnable_parameters.initialize_population()
+
+        if index is None:
+            for i in range(self.population):
+                gas = GasForReduction(output_learnable_parameters, i, self.non_important_species,
+                                      self.previous_learnable_parameters, self.remained_reactions_encode_through_sensitivity,
+                                      self.mechanism_yaml_path)
+                string = gas.get_skeleton_mechanism_yaml_string(with_all_species=False)
+                output_file_name = f"output\\{prefix}_individual{i}.yaml"
+                f = open(output_file_name, mode="w")
+                print(f"Reduced mechanism saved to [{output_file_name}].\n")
+                f.write(string)
+                f.close()
+
+        else:
+            gas = GasForReduction(output_learnable_parameters, index, self.non_important_species,
+                                  self.previous_learnable_parameters, self.remained_reactions_encode_through_sensitivity,
+                                  self.mechanism_yaml_path)
+            string = gas.get_skeleton_mechanism_yaml_string(with_all_species=False)
+            output_file_name = f"output\\{prefix}_individual{index}.yaml"
+            f = open(output_file_name, mode="w")
+            print(f"Reduced mechanism saved to [{output_file_name}].\n")
+            f.write(string)
+            f.close()
+
 
     def print_IDT_results(self, index):
         ct.suppress_thermo_warnings()

@@ -1,8 +1,6 @@
-54 # RRC
-5   # Spcies Num of Fuel
+5   # Spcies Num of mixture
 4 # Exp group Num
 2 # Max point Num in group
-TUM_CH2O_CH3OH_0.1.yaml # Mech Name
 2000 #timesteps
 CH3OH #  specie 1
 CO2 #  specie 2

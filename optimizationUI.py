@@ -1,4 +1,4 @@
-from GAPar import GeneticAlgorithmForOptimization, GeneticAlgorithmForReduction
+from GAPar import GeneticAlgorithmForOptimization
 import multiprocessing
 import os
 import cantera as ct
@@ -25,11 +25,11 @@ def start_program():
     return ga
 
 
-def reduction_module_command_line(ga):
+def optimization_module_command_line(ga):
     print("\n----------------------------------------")
     print("Please use one of the following commands:")
-    print("[run]: start reduction")
-    print("[output]: output reduced mechanism by generating an yaml file")
+    print("[run]: start optimization")
+    print("[output]: output optimized mechanism by generating an yaml file")
     print("[visualize]: show accuracy and size curve the given checkpoints by showing ")
     print("[animation]: create a GIF")
     print("[quit]: shut down program")
@@ -55,14 +55,26 @@ def reduction_module_command_line(ga):
                 print("Visualization interrupted by an error.\n")
                 continue
         if command == "output":
-            print(f"Please give the index of the desired output mechanism in the current population.")
-            index_read = input("> ")
+            print(f"Please give the name of the checkpoint file (that locates in the [\Checkpoint] directory) for the desired output mechanism.")
+            checkpoint_name = input("> ")
+            print(f"Please give the prefix of the name of the output file.")
+            prefix = input("> ")
+
             try:
-                index = int(index_read)
-                ga.generate_yaml_file(index)
+                print(f"Please give the index of the output file. Type [all] to output all individuals in the checkpoint.")
+                index_input = input("> ")
+                if index_input == "all":
+                    ga.generate_yaml_file(f"{checkpoint_name}", None, prefix)
+                else:
+                    try:
+                        index = int(index_input)
+                        ga.generate_yaml_file(f"{checkpoint_name}", index, prefix)
+                    except ValueError:
+                        print("Input should be either [all] or an int number.")
+                # Todo: 6_RRC_final_test.csv
                 continue
-            except ValueError:
-                print("Index must be an integer number.\n")
+            except FileNotFoundError:
+                print("Please check the given file name.\n")
                 continue
         if command == "quit":
             return "quit"
@@ -79,7 +91,7 @@ if __name__ == '__main__':
 
     while True:
         ga = start_program()
-        state = reduction_module_command_line(ga)
+        state = optimization_module_command_line(ga)
 
         if state == "quit":
             exit()

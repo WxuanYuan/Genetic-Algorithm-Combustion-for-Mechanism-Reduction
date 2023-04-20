@@ -63,15 +63,26 @@ def reduction_module_command_line(ga):
                 print("No checkpoint found.\n")
                 continue
         if command == "output":
-            print(f"Please give the index of the desired output mechanism in the current population.")
-            index_read = input("> ")
+            print(f"Please give the name of the checkpoint file (that locates in the [\Checkpoint] directory) for the desired output mechanism.")
+            checkpoint_name = input("> ")
+            print(f"Please give the prefix of the name of the output file.")
+            prefix = input("> ")
+
             try:
-                index = int(index_read)
-                ga.generate_yaml_file(index)
-                print("Reduced mechanism saved to [skeleton_mechanism.yaml].\n")
+                print(f"Please give the index of the output file. Type [all] to output all individuals in the checkpoint.")
+                index_input = input("> ")
+                if index_input == "all":
+                    ga.generate_yaml_file(f"{checkpoint_name}", None, prefix)
+                else:
+                    try:
+                        index = int(index_input)
+                        ga.generate_yaml_file(f"{checkpoint_name}", index, prefix)
+                    except ValueError:
+                        print("Input should be either [all] or an int number.")
+                # Todo: 59_CH4_Reduction_optimized_final.csv
                 continue
-            except ValueError:
-                print("Index must be an integer number.\n")
+            except FileNotFoundError:
+                print("Please check the given file name.\n")
                 continue
         if command == "quit":
             return "quit"
