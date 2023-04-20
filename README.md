@@ -35,6 +35,8 @@ Example command:
 
 ck2yaml --input=MECH_FILE_NAME.inp --permissive --thermo=THERMO_FILE_NAME.dat
 
+Further information:"https://cantera.org/tutorials/ck2yaml-tutorial.html"
+
 
 3. **Experimental IDT Data CSV File**
 
