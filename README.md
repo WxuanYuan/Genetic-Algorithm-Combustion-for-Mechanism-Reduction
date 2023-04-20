@@ -93,3 +93,5 @@ Click 'install.bat' before first launching to install all dependencies needed.
 Click 'launch_optimization.bat' to start optimization.
 
 Click 'launch_retuction.bat' to start reduction.
+
+Caution! Please carefully set the output paths for mechanism files and checkpoint files, and promptly transfer files that need to be retained to avoid being overwritten.
